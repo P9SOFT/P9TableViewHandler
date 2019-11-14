@@ -1,0 +1,181 @@
+{
+    "code": 0,
+    "payload": [
+        {
+            "type": 1,
+            "title": "Section A",
+            "textColor" : "eeeeee",
+            "backgroundColor": "111111",
+            "records": [
+                {
+                    "type": 1,
+                    "title": "hello one",
+                    "textColor" : "111111"
+                },
+                {
+                    "type": 1,
+                    "title": "hello two",
+                    "textColor" : "111111",
+                    "backgroundColor": "eeeeee"
+                },
+                {
+                    "type": 1,
+                    "title": "hello three",
+                    "textColor" : "111111",
+                    "backgroundColor": "dddddd"
+                },
+                {
+                    "type": 1,
+                    "title": "hello four",
+                    "textColor" : "111111",
+                    "backgroundColor": "cccccc"
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "title": "Section B",
+            "textColor" : "eeeeee",
+            "backgroundColor": "111111",
+            "records": [
+                {
+                    "type": 2,
+                    "backgroundColor": "ffeeee",
+                    "flag": false
+                },
+                {
+                    "type": 2,
+                    "backgroundColor": "eeffee",
+                    "flag": true
+                },
+                {
+                    "type": 2,
+                    "backgroundColor": "eeeeff",
+                    "flag": false
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "title": "Section C",
+            "textColor" : "eeeeee",
+            "backgroundColor": "111111",
+            "records": [
+                {
+                    "type": 1,
+                    "title": "hello four",
+                    "textColor" : "111111",
+                    "backgroundColor": "cccccc"
+                },
+                {
+                    "type": 1,
+                    "title": "hello three",
+                    "textColor" : "111111",
+                    "backgroundColor": "dddddd"
+                },
+                {
+                    "type": 1,
+                    "title": "hello two",
+                    "textColor" : "111111",
+                    "backgroundColor": "eeeeee"
+                },
+                {
+                    "type": 1,
+                    "title": "hello one",
+                    "textColor" : "111111"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "title": "Section D header",
+            "footerTitle": "Section D footer",
+            "textColor" : "eeeeee",
+            "backgroundColor": "111111",
+            "records": [
+                {
+                    "type": 1,
+                    "title": "hello one",
+                    "textColor" : "111111"
+                },
+                {
+                    "type": 2,
+                    "backgroundColor": "ffeeee",
+                    "flag": false
+                },
+                {
+                    "type": 1,
+                    "title": "hello two",
+                    "textColor" : "111111",
+                    "backgroundColor": "eeeeee"
+                },
+                {
+                    "type": 2,
+                    "backgroundColor": "eeffee",
+                    "flag": true
+                },
+                {
+                    "type": 1,
+                    "title": "hello three",
+                    "textColor" : "111111",
+                    "backgroundColor": "dddddd"
+                },
+                {
+                    "type": 2,
+                    "backgroundColor": "eeeeff",
+                    "flag": false
+                },
+                {
+                    "type": 1,
+                    "title": "hello four",
+                    "textColor" : "111111",
+                    "backgroundColor": "cccccc"
+                }
+            ]
+        },
+        {
+            "records": [
+                {
+                    "type": 1,
+                    "title": "hello one",
+                    "textColor" : "111111"
+                },
+                {
+                    "type": 1,
+                    "title": "hello two",
+                    "textColor" : "111111",
+                    "backgroundColor": "eeeeee"
+                },
+                {
+                    "type": 1,
+                    "title": "hello three",
+                    "textColor" : "111111",
+                    "backgroundColor": "dddddd"
+                },
+                {
+                    "type": 1,
+                    "title": "hello four",
+                    "textColor" : "111111",
+                    "backgroundColor": "cccccc"
+                },
+                {
+                    "type": 1,
+                    "title": "hello three",
+                    "textColor" : "111111",
+                    "backgroundColor": "dddddd"
+                },
+                {
+                    "type": 1,
+                    "title": "hello two",
+                    "textColor" : "111111",
+                    "backgroundColor": "eeeeee"
+                },
+                {
+                    "type": 1,
+                    "title": "hello one",
+                    "textColor" : "111111"
+                }
+            ]
+        }
+     ]
+}

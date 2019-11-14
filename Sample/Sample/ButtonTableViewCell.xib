@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="60" id="KGk-i7-Jjw" customClass="ButtonTableViewCell" customModule="Sample" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sample" translatesAutoresizingMaskIntoConstraints="NO" id="Tyi-7j-6Wd" userLabel="thumbnailImageView">
+                        <rect key="frame" x="20" y="5" width="50" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="Tyi-7j-6Wd" secondAttribute="height" multiplier="1:1" id="Trs-NT-Wb7"/>
+                        </constraints>
+                    </imageView>
+                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uhZ-h1-agz" userLabel="SwitchButton">
+                        <rect key="frame" x="253" y="14.5" width="49" height="31"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="31" id="cfH-Ji-lpc"/>
+                            <constraint firstAttribute="width" constant="47" id="vWp-A6-Lcz"/>
+                        </constraints>
+                        <connections>
+                            <action selector="switchButtonToggled:" destination="KGk-i7-Jjw" eventType="valueChanged" id="VDJ-Gd-9eI"/>
+                        </connections>
+                    </switch>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Tyi-7j-6Wd" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-5" id="R3Y-vW-KoJ"/>
+                    <constraint firstItem="Tyi-7j-6Wd" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="VRg-QW-T28"/>
+                    <constraint firstItem="uhZ-h1-agz" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailing" constant="-20" id="c6g-W2-4xv"/>
+                    <constraint firstItem="Tyi-7j-6Wd" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="dx9-TA-550"/>
+                    <constraint firstItem="uhZ-h1-agz" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="tgb-rl-d6l"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="switchButton" destination="uhZ-h1-agz" id="3QQ-Cb-jxo"/>
+                <outlet property="thumbnailImageView" destination="Tyi-7j-6Wd" id="SD0-wW-f35"/>
+            </connections>
+            <point key="canvasLocation" x="137.68115942028987" y="158.03571428571428"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="sample" width="210" height="205"/>
+    </resources>
+</document>
