@@ -17,7 +17,7 @@ import UIKit
 public protocol P9TableViewCellProtocol: class {
     
     static func identifier() -> String
-    static func instanceFromNib() -> UIView
+    static func instanceFromNib() -> UIView?
     static func cellHeightForData(_ data: Any?, extra: Any?) -> CGFloat
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9TableViewCellDelegate)
@@ -30,9 +30,9 @@ public extension P9TableViewCellProtocol {
         return String(describing: type(of: self)).components(separatedBy: ".").first ?? ""
     }
     
-    static func instanceFromNib() -> UIView {
+    static func instanceFromNib() -> UIView? {
         
-        return Bundle.main.loadNibNamed(identifier(), owner: nil, options: nil)?[0] as! UIView
+        return Bundle.main.loadNibNamed(identifier(), owner: nil, options: nil)?[0] as? UIView
     }
     
     func setDelegate(_ delegate:P9TableViewCellDelegate) {}
@@ -41,7 +41,7 @@ public extension P9TableViewCellProtocol {
 @objc public protocol P9TableViewCellObjcProtocol: class {
     
     static func identifier() -> String
-    static func instanceFromNib() -> UIView
+    static func instanceFromNib() -> UIView?
     static func cellHeightForData(_ data: Any?, extra: Any?) -> CGFloat
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9TableViewCellDelegate)
@@ -152,14 +152,12 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
                 return nil
         }
         
-        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
-            let view = tableViewCellContentsCell.instanceFromNib()
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
             (view as? P9TableViewCellProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
             (view as? P9TableViewCellProtocol)?.setDelegate(self)
             return view
         }
-        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
-            let view = tableViewCellContentsCell.instanceFromNib()
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
             (view as? P9TableViewCellObjcProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
             (view as? P9TableViewCellObjcProtocol)?.setDelegate(self)
             return view
@@ -194,14 +192,12 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
                 return nil
         }
         
-        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
-            let view = tableViewCellContentsCell.instanceFromNib()
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
             (view as? P9TableViewCellProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
             (view as? P9TableViewCellProtocol)?.setDelegate(self)
             return view
         }
-        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
-            let view = tableViewCellContentsCell.instanceFromNib()
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
             (view as? P9TableViewCellObjcProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
             (view as? P9TableViewCellObjcProtocol)?.setDelegate(self)
             return view
