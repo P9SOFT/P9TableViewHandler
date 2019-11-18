@@ -9,12 +9,12 @@
 
 import UIKit
 
-protocol P9TableViewCellDelegate: class {
+@objc public protocol P9TableViewCellDelegate: class {
     
     func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
 }
 
-protocol P9TableViewCellProtocol: class {
+public protocol P9TableViewCellProtocol: class {
     
     static func identifier() -> String
     static func instanceFromNib() -> UIView
@@ -23,7 +23,7 @@ protocol P9TableViewCellProtocol: class {
     func setDelegate(_ delegate: P9TableViewCellDelegate)
 }
 
-extension P9TableViewCellProtocol {
+public extension P9TableViewCellProtocol {
     
     static func identifier() -> String {
         
@@ -38,37 +38,37 @@ extension P9TableViewCellProtocol {
     func setDelegate(_ delegate:P9TableViewCellDelegate) {}
 }
 
-protocol P9TableViewHandlerDelegate: class {
+@objc public protocol P9TableViewCellObjcProtocol: class {
     
-    func tableViewHandlerWillBeginDragging(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint)
-    func tableViewHandlerDidScroll(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint)
-    func tableViewHandlerDidEndScroll(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint)
-//    func tableViewHandler(handlerIdentifier:String, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
-//    func tableViewHandler(handlerIdentifier:String, willDisplayHeaderView view: UIView, forSection section: Int)
-//    func tableViewHandler(handlerIdentifier:String, willDisplayFooterView view: UIView, forSection section: Int)
-//    func tableViewHandler(handlerIdentifier:String, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
-//    func tableViewHandler(handlerIdentifier:String, didEndDisplayingHeaderView view: UIView, forSection section: Int)
-//    func tableViewHandler(handlerIdentifier:String, didEndDisplayingFooterView view: UIView, forSection section: Int)
-    func tableViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?)
-    func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    static func identifier() -> String
+    static func instanceFromNib() -> UIView
+    static func cellHeightForData(_ data: Any?, extra: Any?) -> CGFloat
+    func setData(_ data: Any?, extra: Any?)
+    func setDelegate(_ delegate: P9TableViewCellDelegate)
 }
 
-extension P9TableViewHandlerDelegate {
+@objc public protocol P9TableViewHandlerDelegate: class {
     
-    func tableViewHandlerWillBeginDragging(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint) {}
-    func tableViewHandlerDidEndScroll(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint) {}
-    func tableViewHandlerDidScroll(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint) {}
-    func tableViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?) {}
-    func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?) {}
+    @objc optional func tableViewHandlerWillBeginDragging(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint)
+    @objc optional func tableViewHandlerDidScroll(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint)
+    @objc optional func tableViewHandlerDidEndScroll(handlerIdentifier:String, contentSize:CGSize, contentOffset:CGPoint)
+    @objc optional func tableViewHandler(handlerIdentifier:String, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    @objc optional func tableViewHandler(handlerIdentifier:String, willDisplayHeaderView view: UIView, forSection section: Int)
+    @objc optional func tableViewHandler(handlerIdentifier:String, willDisplayFooterView view: UIView, forSection section: Int)
+    @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplayingHeaderView view: UIView, forSection section: Int)
+    @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplayingFooterView view: UIView, forSection section: Int)
+    @objc optional func tableViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?)
+    @objc optional func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
 }
 
-open class P9TableViewHandler: NSObject {
+@objc open class P9TableViewHandler: NSObject {
     
     @objc(P9TableViewRecord) public class Record : NSObject {
         var type:String
         var data:Any?
         var extra:Any?
-        @objc public init(type:String, data:Any?, extra:Any?=nil) {
+        @objc public init(type:String, data:Any?, extra:Any?) {
             self.type = type
             self.data = data
             self.extra = extra
@@ -97,20 +97,20 @@ open class P9TableViewHandler: NSObject {
     fileprivate var cellIdentifierForType:[String:String] = [:]
     fileprivate var sections:[Section] = []
     
-    weak var delegate:P9TableViewHandlerDelegate?
+    @objc public weak var delegate:P9TableViewHandlerDelegate?
     
-    func standby(identifier:String, cellIdentifierForType:[String:String], tableView:UITableView) {
+    @objc public func standby(identifier:String, cellIdentifierForType:[String:String], tableView:UITableView) {
         
         handlerIdentifier = identifier
         self.cellIdentifierForType = cellIdentifierForType
         self.cellIdentifierForType.forEach { (key, value) in
-            tableView.register(UINib.init(nibName: value, bundle: nil), forCellReuseIdentifier: value)
+            tableView.register(UINib(nibName: value, bundle: nil), forCellReuseIdentifier: value)
         }
         tableView.dataSource = self
         tableView.delegate = self
     }
     
-    func setSections(sections:[Section]) {
+    @objc public func setSections(_ sections:[Section]) {
         
         self.sections = sections
     }
@@ -128,12 +128,19 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         guard section >= 0, section < sections.count,
             let type = sections[section].headerType,
             let clsName = cellIdentifierForType[type], clsName.count > 0,
-            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName),
-            let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type else {
+            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName) ?? Bundle.main.classNamed(clsName) else {
                 return CGFloat.leastNormalMagnitude
         }
         
-        return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
+            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra:
+                sections[section].extra)
+        }
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
+            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra:
+                sections[section].extra)
+        }
+        return CGFloat.leastNormalMagnitude
     }
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -141,15 +148,23 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         guard section >= 0, section < sections.count,
             let type = sections[section].headerType,
             let clsName = cellIdentifierForType[type], clsName.count > 0,
-            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName),
-            let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type else {
+            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName) ?? Bundle.main.classNamed(clsName) else {
                 return nil
         }
         
-        let view = tableViewCellContentsCell.instanceFromNib()
-        (view as? P9TableViewCellProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
-        (view as? P9TableViewCellProtocol)?.setDelegate(self)
-        return view
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
+            let view = tableViewCellContentsCell.instanceFromNib()
+            (view as? P9TableViewCellProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
+            (view as? P9TableViewCellProtocol)?.setDelegate(self)
+            return view
+        }
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
+            let view = tableViewCellContentsCell.instanceFromNib()
+            (view as? P9TableViewCellObjcProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
+            (view as? P9TableViewCellObjcProtocol)?.setDelegate(self)
+            return view
+        }
+        return nil
     }
     
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -157,12 +172,17 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         guard section >= 0, section < sections.count,
             let type = sections[section].footerType,
             let clsName = cellIdentifierForType[type], clsName.count > 0,
-            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName),
-            let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type else {
+            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName) ?? Bundle.main.classNamed(clsName) else {
                 return CGFloat.leastNormalMagnitude
         }
         
-        return tableViewCellContentsCell.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
+            return tableViewCellContentsCell.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
+        }
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
+            return tableViewCellContentsCell.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
+        }
+        return CGFloat.leastNormalMagnitude
     }
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -170,15 +190,23 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         guard section >= 0, section < sections.count,
             let type = sections[section].footerType,
             let clsName = cellIdentifierForType[type], clsName.count > 0,
-            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName),
-            let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type else {
+            let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName) ?? Bundle.main.classNamed(clsName) else {
                 return nil
         }
         
-        let view = tableViewCellContentsCell.instanceFromNib()
-        (view as? P9TableViewCellProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
-        (view as? P9TableViewCellProtocol)?.setDelegate(self)
-        return view
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
+            let view = tableViewCellContentsCell.instanceFromNib()
+            (view as? P9TableViewCellProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
+            (view as? P9TableViewCellProtocol)?.setDelegate(self)
+            return view
+        }
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
+            let view = tableViewCellContentsCell.instanceFromNib()
+            (view as? P9TableViewCellObjcProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
+            (view as? P9TableViewCellObjcProtocol)?.setDelegate(self)
+            return view
+        }
+        return nil
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -194,12 +222,17 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         guard indexPath.section >= 0, indexPath.section < sections.count,
               let records = sections[indexPath.section].records, indexPath.row >= 0, indexPath.row < records.count,
               let clsName = cellIdentifierForType[records[indexPath.row].type], clsName.count > 0,
-              let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName),
-              let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type else {
+              let cls:AnyClass = Bundle.main.classNamed(moduleName + "." + clsName) ?? Bundle.main.classNamed(clsName) else {
             return 0
         }
         
-        return tableViewCellContentsCell.cellHeightForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
+            return tableViewCellContentsCell.cellHeightForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+        }
+        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
+            return tableViewCellContentsCell.cellHeightForData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+        }
+        return 0
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -207,7 +240,7 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         guard indexPath.section >= 0, indexPath.section < sections.count,
               let records = sections[indexPath.section].records, indexPath.row >= 0, indexPath.row < records.count,
               let clsName = cellIdentifierForType[records[indexPath.row].type], clsName.count > 0 else {
-                return UITableViewCell.init(frame: .zero)
+                return UITableViewCell(frame: .zero)
         }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: clsName, for: indexPath)
@@ -215,7 +248,10 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
             tableViewCellContentsCell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
             tableViewCellContentsCell.setDelegate(self)
         }
-        
+        if let tableViewCellContentsCell = cell as? P9TableViewCellObjcProtocol {
+            tableViewCellContentsCell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+            tableViewCellContentsCell.setDelegate(self)
+        }
         return cell
     }
     
@@ -227,7 +263,7 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         }
         
         let cellIdentifier = cellIdentifierForType[records[indexPath.row].type] ?? records[indexPath.row].type
-        delegate?.tableViewHandlerCellDidSelect(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, indexPath: indexPath, data: records[indexPath.row].data, extra: records[indexPath.row].extra)
+        delegate?.tableViewHandlerCellDidSelect?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, indexPath: indexPath, data: records[indexPath.row].data, extra: records[indexPath.row].extra)
     }
 }
 
@@ -235,31 +271,61 @@ extension P9TableViewHandler: UIScrollViewDelegate {
     
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         
-        delegate?.tableViewHandlerWillBeginDragging(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
+        delegate?.tableViewHandlerWillBeginDragging?(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        delegate?.tableViewHandlerDidScroll(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
+        delegate?.tableViewHandlerDidScroll?(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         
         if decelerate == false {
-            delegate?.tableViewHandlerDidEndScroll(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
+            delegate?.tableViewHandlerDidEndScroll?(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
         }
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
-        delegate?.tableViewHandlerDidEndScroll(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
+        delegate?.tableViewHandlerDidEndScroll?(handlerIdentifier: handlerIdentifier, contentSize: scrollView.contentSize, contentOffset: scrollView.contentOffset)
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        delegate?.tableViewHandler?(handlerIdentifier: handlerIdentifier, willDisplay: cell, forRowAt: indexPath)
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        
+        delegate?.tableViewHandler?(handlerIdentifier: handlerIdentifier, willDisplayHeaderView: view, forSection: section)
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+        
+        delegate?.tableViewHandler?(handlerIdentifier: handlerIdentifier, willDisplayFooterView: view, forSection: section)
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        delegate?.tableViewHandler?(handlerIdentifier: handlerIdentifier, didEndDisplaying: cell, forRowAt: indexPath)
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int) {
+        
+        delegate?.tableViewHandler?(handlerIdentifier: handlerIdentifier, didEndDisplayingHeaderView: view, forSection: section)
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplayingFooterView view: UIView, forSection section: Int) {
+        
+        delegate?.tableViewHandler?(handlerIdentifier: handlerIdentifier, didEndDisplayingFooterView: view, forSection: section)
     }
 }
 
 extension P9TableViewHandler: P9TableViewCellDelegate {
     
-    public func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?) {
+    public func tableViewCellEvent(cellIdentifier: String, eventIdentifier: String?, data: Any?, extra: Any?) {
         
-        delegate?.tableViewHandlerCellEvent(handlerIdentifier: handlerIdentifier, cellIdentifier:cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
+        delegate?.tableViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
     }
 }
