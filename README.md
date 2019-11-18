@@ -93,7 +93,7 @@ func setData(_ data: Any?, extra: Any?) {
 setDelegate function pass the callback object to feedback custom event.
 If your tableview cell have some custom event, confirm P9TableViewCellDelegate first.
 
-```swfit
+```swift
 protocol P9TableViewCellDelegate: class {
     
     func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
@@ -102,7 +102,7 @@ protocol P9TableViewCellDelegate: class {
 
 and set delegate and feedback your custom event by it.
 
-```swfit
+```swift
 func setDelegate(_ delegate: P9TableViewCellDelegate) {
     self.delegate = delegate
 }
