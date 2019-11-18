@@ -133,12 +133,10 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         }
         
         if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
-            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra:
-                sections[section].extra)
+            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
         }
         if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
-            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra:
-                sections[section].extra)
+            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
         }
         return CGFloat.leastNormalMagnitude
     }
