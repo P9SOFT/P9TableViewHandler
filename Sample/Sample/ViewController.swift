@@ -42,7 +42,10 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        tableView.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.bounds.size.width, height: view.bounds.size.height-(view.safeAreaInsets.top+view.safeAreaInsets.bottom))
+        tableView.frame = CGRect(x: view.safeAreaInsets.left,
+                                 y: view.safeAreaInsets.top,
+                                 width: view.bounds.size.width-(view.safeAreaInsets.left+view.safeAreaInsets.right),
+                                 height: view.bounds.size.height-(view.safeAreaInsets.top+view.safeAreaInsets.bottom))
     }
     
     func loadSampleData() {
@@ -61,29 +64,29 @@ class ViewController: UIViewController {
                 var records:[P9TableViewHandler.Record] = []
                 for i in r {
                     if let type = i["type"] as? Int {
-                        records.append(P9TableViewHandler.Record.init(type: "r\(type)", data: i))
+                        records.append(P9TableViewHandler.Record(type: "r\(type)", data: i, extra: nil))
                     }
                 }
                 let sectionType = s["type"] as? Int ?? 0
                 switch sectionType {
                 case 1 :
-                    sections.append(P9TableViewHandler.Section.init(headerType: "h\(sectionType)", headerData: s, footerType: nil, footerData: nil, records: records, extra: nil))
+                    sections.append(P9TableViewHandler.Section(headerType: "h\(sectionType)", headerData: s, footerType: nil, footerData: nil, records: records, extra: nil))
                 case 2 :
-                    sections.append(P9TableViewHandler.Section.init(headerType: "h\(sectionType)", headerData: s, footerType: "f\(sectionType)", footerData: s, records: records, extra: nil))
+                    sections.append(P9TableViewHandler.Section(headerType: "h\(sectionType)", headerData: s, footerType: "f\(sectionType)", footerData: s, records: records, extra: nil))
                 default :
-                    sections.append(P9TableViewHandler.Section.init(headerType: nil, headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
+                    sections.append(P9TableViewHandler.Section(headerType: nil, headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
                 }
             }
         }
         
-        handler.setSections(sections: sections)
+        handler.setSections(sections)
         tableView.reloadData()
     }
 }
 
 extension ViewController: P9TableViewHandlerDelegate {
     
-    func tableViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?) {
+    func tableViewHandlerCellDidSelect(handlerIdentifier: String, cellIdentifier: String, indexPath: IndexPath, data: Any?, extra: Any?) {
         
         print("handler \(handlerIdentifier) cell \(cellIdentifier) indexPath \(indexPath.section):\(indexPath.row) did select")
     }
