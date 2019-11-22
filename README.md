@@ -29,8 +29,8 @@ handler.delegate = self
 handler.standby(identifier:"sample", cellIdentifierForType: cellIdentifierForType, tableView: tableView)
 
 var records:[P9TalveViewHandler.Record] = []
-records.append(P9TableViewHandler.Record(type: "2", data: nil))
-records.append(P9TableViewHandler.Record(type: "3", data: nil))
+records.append(P9TableViewHandler.Record(type: "2", data: nil, extra: nil))
+records.append(P9TableViewHandler.Record(type: "3", data: nil, extra: nil))
 
 var sections:[P9TableViewHandler.Section] = []
 sections.append(P9TableViewHandler.Section(headerType: "1", headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
