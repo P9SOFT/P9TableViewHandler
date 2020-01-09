@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "P9TableViewHandler"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "TableView handling library. Reduce typing and manage simple."
   s.homepage     = "https://github.com/P9SOFT/P9TableViewHandler"
   s.license      = { :type => 'MIT' }
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '8.0'
 
-  s.source       = { :git => "https://github.com/P9SOFT/P9TableViewHandler.git", :tag => "1.0.0" }
+  s.source       = { :git => "https://github.com/P9SOFT/P9TableViewHandler.git", :tag => "1.0.1" }
   s.swift_version = "4.2"
   s.source_files  = "Sources/*.swift"
 
