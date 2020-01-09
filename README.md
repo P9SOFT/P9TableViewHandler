@@ -51,6 +51,7 @@ Let's take a look around one by one.
 # Make your tableview cell confirm the protocol
 
 You need confirm and implement P9TableViewCellProtocol as below for your tableview cell to use P9TableViewHandler.
+If you want to use section header or footer view then, you need confirm and implement same protocol for it.
 
 ```swift
 protocol P9TableViewCellProtocol: class {

@@ -79,7 +79,7 @@ class ViewController: UIViewController {
             }
         }
         
-        handler.setSections(sections)
+        handler.sections = sections
         tableView.reloadData()
     }
 }
