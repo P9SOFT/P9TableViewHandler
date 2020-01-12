@@ -32,10 +32,9 @@ var records:[P9TalveViewHandler.Record] = []
 records.append(P9TableViewHandler.Record(type: "2", data: nil, extra: nil))
 records.append(P9TableViewHandler.Record(type: "3", data: nil, extra: nil))
 
-var sections:[P9TableViewHandler.Section] = []
-sections.append(P9TableViewHandler.Section(headerType: "1", headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
+handler.sections.append(P9TableViewHandler.Section(headerType: "1", headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
 
-handler.setSections(section: sections)
+tableView.reloadData()
 
 func tableViewHandlerCellDidSelect(handlerIdentifier: String, cellIdentifier: String, indexPath: IndexPath, data: Any?, extra: Any?) {
     // handling tableview default select action
@@ -193,10 +192,7 @@ var records:[P9TalveViewHandler.Record] = []
 records.append(P9TableViewHandler.Record(type: "1", data: nil))
 records.append(P9TableViewHandler.Record(type: "2", data: nil))
 
-var sections:[P9TableViewHandler.Section] = []
-sections.append(P9TableViewHandler.Section(headerType: nil, headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
-
-handler.setSections(section: sections)
+handler.sections.append(P9TableViewHandler.Section(headerType: nil, headerData: nil, footerType: nil, footerData: nil, records: records, extra: nil))
 ```
 
 And, reload targt tableview.
