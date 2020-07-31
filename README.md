@@ -235,6 +235,24 @@ extension ViewController: P9TableViewHandlerDelegate {
 }
 ```
 
+If you don't like huge switch code, then use callback function(or block) for each event identifier.
+
+```swift
+enum EventId: String {
+    case thumbnailTouch
+}
+
+handler.registerCallback(callback: thumbnailTouch(data:extra:), forCellIdentifier: TableViewCell.identifier(), withEventIdentifier: EventId.thumbnailTouch.rawValue)
+
+extension ViewController {
+    
+    func thumbnailTouch(data:Any?, extra:Any?) {
+        
+        print("thumbnailTouch")
+    }
+}
+```
+
 # License
 
 MIT License, where applicable. http://en.wikipedia.org/wiki/MIT_License

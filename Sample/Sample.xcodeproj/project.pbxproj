@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		277AB73B24D2A5C40028B99F /* EventId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277AB73A24D2A5C40028B99F /* EventId.swift */; };
 		27B5484D2379483B001AD988 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B5484C2379483B001AD988 /* AppDelegate.swift */; };
 		27B5484F2379483B001AD988 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B5484E2379483B001AD988 /* SceneDelegate.swift */; };
 		27B548512379483B001AD988 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B548502379483B001AD988 /* ViewController.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		277AB73A24D2A5C40028B99F /* EventId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventId.swift; sourceTree = "<group>"; };
 		27B548492379483B001AD988 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27B5484C2379483B001AD988 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27B5484E2379483B001AD988 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -88,9 +90,10 @@
 				27F321E8237A467A0032D530 /* TextTableViewCell.xib */,
 				27F321EB237A46EE0032D530 /* ButtonTableViewCell.swift */,
 				27F321EC237A46EE0032D530 /* ButtonTableViewCell.xib */,
+				277AB73A24D2A5C40028B99F /* EventId.swift */,
 				27F321EF237A6CD00032D530 /* StringExtenstion.swift */,
-				27B548552379483E001AD988 /* Assets.xcassets */,
 				27F321F1237A6E0B0032D530 /* list.json */,
+				27B548552379483E001AD988 /* Assets.xcassets */,
 				27B548572379483E001AD988 /* LaunchScreen.storyboard */,
 				27B5485A2379483E001AD988 /* Info.plist */,
 			);
@@ -189,6 +192,7 @@
 				27B5484D2379483B001AD988 /* AppDelegate.swift in Sources */,
 				27B5484F2379483B001AD988 /* SceneDelegate.swift in Sources */,
 				27F321F8237BF70B0032D530 /* TextTableSectionFooterView.swift in Sources */,
+				277AB73B24D2A5C40028B99F /* EventId.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

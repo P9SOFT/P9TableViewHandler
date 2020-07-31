@@ -92,9 +92,12 @@ public extension P9TableViewCellProtocol {
         }
     }
     
+    public typealias CallbackBlock = (_ data:Any?, _ extra:Any?) -> Void
+    
     fileprivate let moduleName = Bundle.main.infoDictionary?["CFBundleName"] as? String ?? ""
     fileprivate var handlerIdentifier:String = ""
     fileprivate var cellIdentifierForType:[String:String] = [:]
+    fileprivate var callbackBlocks:[String:CallbackBlock] = [:]
     
     @objc public var sections:[Section] = []
     @objc public weak var delegate:P9TableViewHandlerDelegate?
@@ -108,6 +111,29 @@ public extension P9TableViewCellProtocol {
         }
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    @objc public func registerCallback(callback: @escaping CallbackBlock, forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String) {
+        
+        callbackBlocks[key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier)] = callback
+    }
+    
+    @objc public func unregistCallback(forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String) {
+        
+        callbackBlocks.removeValue(forKey: key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier))
+    }
+    
+    @objc public func unregistAllCallbacks() {
+        
+        callbackBlocks.removeAll()
+    }
+}
+
+extension P9TableViewHandler {
+    
+    fileprivate func key(forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String) -> String {
+        
+        return "\(cellIdentifier):\(eventIdentifier)"
     }
 }
 
@@ -315,6 +341,10 @@ extension P9TableViewHandler: P9TableViewCellDelegate {
     
     public func tableViewCellEvent(cellIdentifier: String, eventIdentifier: String?, data: Any?, extra: Any?) {
         
-        delegate?.tableViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
+        if let eventIdentifier = eventIdentifier, let callback = callbackBlocks[key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier)] {
+            callback(data, extra)
+        } else {
+            delegate?.tableViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
+        }
     }
 }

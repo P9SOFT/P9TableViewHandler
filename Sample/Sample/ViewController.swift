@@ -35,6 +35,7 @@ class ViewController: UIViewController {
         
         handler.delegate = self
         handler.standby(identifier:"list", cellIdentifierForType: cellIdentifierForType, tableView: tableView)
+        handler.registerCallback(callback: thumbnailTouch(data:extra:), forCellIdentifier: ButtonTableViewCell.identifier(), withEventIdentifier: EventId.thumbnailTouch.rawValue)
         
         loadSampleData()
     }
@@ -81,6 +82,14 @@ class ViewController: UIViewController {
         
         handler.sections = sections
         tableView.reloadData()
+    }
+}
+
+extension ViewController {
+    
+    func thumbnailTouch(data:Any?, extra:Any?) {
+        
+        print("thumbnailTouch")
     }
 }
 

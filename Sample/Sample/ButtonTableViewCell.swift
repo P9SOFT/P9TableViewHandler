@@ -33,7 +33,7 @@ class ButtonTableViewCell: UITableViewCell {
         if data != nil, let touch = touches.first {
             let touchedPosition = touch.location(in: self)
             if thumbnailImageView.frame.contains(touchedPosition) == true {
-                delegate?.tableViewCellEvent(cellIdentifier: ButtonTableViewCell.identifier(), eventIdentifier: "thumbnailTouch", data: data, extra: nil)
+                delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.thumbnailTouch.rawValue, data: data, extra: nil)
                 return
             }
         }
@@ -43,7 +43,7 @@ class ButtonTableViewCell: UITableViewCell {
     
     @IBAction func switchButtonToggled(_ sender: Any) {
         
-        delegate?.tableViewCellEvent(cellIdentifier: ButtonTableViewCell.identifier(), eventIdentifier: "switchOnOff", data: data, extra: switchButton.isOn)
+        delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.switchButtonChanged.rawValue, data: data, extra: switchButton.isOn)
     }
 }
 
