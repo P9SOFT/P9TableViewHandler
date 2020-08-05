@@ -13,6 +13,7 @@ class TextTableSectionHeaderView: UIView {
     
     fileprivate var data:[String:Any]?
     fileprivate weak var delegate:P9TableViewCellDelegate?
+    fileprivate var indexPath:IndexPath?
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var iconLabel: UILabel!
@@ -22,7 +23,7 @@ class TextTableSectionHeaderView: UIView {
         if data != nil, let touch = touches.first {
             let touchedPosition = touch.location(in: self)
             if iconLabel.frame.contains(touchedPosition) == true {
-                delegate?.tableViewCellEvent(cellIdentifier: TextTableSectionHeaderView.identifier(), eventIdentifier: "iconTouch", data: data, extra: nil)
+                delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.iconTouch.rawValue, indexPath: indexPath, data: data, extra: nil)
                 return
             }
         }
@@ -56,5 +57,10 @@ extension TextTableSectionHeaderView: P9TableViewCellProtocol {
     func setDelegate(_ delegate: P9TableViewCellDelegate) {
         
         self.delegate = delegate
+    }
+    
+    func setIndexPath(_ indexPath: IndexPath) {
+        
+        self.indexPath = indexPath
     }
 }

@@ -40,7 +40,7 @@ func tableViewHandlerCellDidSelect(handlerIdentifier: String, cellIdentifier: St
     // handling tableview default select action
 }
 
-func tableViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier: String, eventIdentifier: String?, data: Any?, extra: Any?) {
+func tableViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier: String, eventIdentifier: String?, indexPath: IndexPath?, data: Any?, extra: Any?) {
     // handling custom event from cell
 }
 ```
@@ -59,6 +59,7 @@ protocol P9TableViewCellProtocol: class {
     static func cellHeightForData(_ data: Any?, extra: Any?) -> CGFloat
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9TableViewCellDelegate)
+    func setIndexPath(_ indexPath: IndexPath)
 }
 ```
 
@@ -91,13 +92,18 @@ func setData(_ data: Any?, extra: Any?) {
 ```
 
 setDelegate function pass the callback object to feedback custom event.
-If your tableview cell have some custom event, confirm P9TableViewCellDelegate first.
+If your tableview cell have some custom event, confirm P9TableViewCellDelegate to your some constroller first.
 
 ```swift
 protocol P9TableViewCellDelegate: class {
     
-    func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
+
+extension ViewController: P9TableViewHandlerDelegate {
+    // ...
+}
+
 ```
 
 and set delegate and feedback your custom event by it.
@@ -108,7 +114,20 @@ func setDelegate(_ delegate: P9TableViewCellDelegate) {
 }
 
 override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    delegate?.tableViewCellEvent(cellIdentifier: SampleTableViewCell.identifier(), eventIdentifier: "touch", data: data, extra: nil)
+    delegate?.tableViewCellEvent(cellIdentifier: SampleTableViewCell.identifier(), eventIdentifier: "touch", indexPath: nil, data: data, extra: nil)
+}
+```
+
+setIndexPath function pass the indexPath object.
+You can store this indexPath information and send it with event delegate call.
+
+```swift
+func setIndexPath(_ indexPath: IndexPath) {
+    self.indexPath = indexPath
+}
+
+override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    delegate?.tableViewCellEvent(cellIdentifier: SampleTableViewCell.identifier(), eventIdentifier: "touch", indexPath: indexPath, data: data, extra: nil)
 }
 ```
 
@@ -216,7 +235,7 @@ Here is protocol and implement sample.
     @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplayingHeaderView view: UIView, forSection section: Int)
     @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplayingFooterView view: UIView, forSection section: Int)
     @objc optional func tableViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?)
-    @objc optional func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    @objc optional func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
 ```
 
@@ -228,7 +247,7 @@ extension ViewController: P9TableViewHandlerDelegate {
         print("handler \(handlerIdentifier) cell \(cellIdentifier) indexPath \(indexPath.section):\(indexPath.row) did select")
     }
     
-    func tableViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier:String, eventIdentifier:String?, data: Any?, extra: Any?) {
+    func tableViewHandlerCellEvent(handlerIdentifier: String, cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data: Any?, extra: Any?) {
         
         print("handler \(handlerIdentifier) cell \(cellIdentifier) event \(eventIdentifier ?? "")")
     }
@@ -242,15 +261,21 @@ enum EventId: String {
     case thumbnailTouch
 }
 
-handler.registerCallback(callback: thumbnailTouch(data:extra:), forCellIdentifier: TableViewCell.identifier(), withEventIdentifier: EventId.thumbnailTouch.rawValue)
+handler.registerCallback(callback: thumbnailTouch(indexPath:data:extra:), forCellIdentifier: TableViewCell.identifier(), withEventIdentifier: EventId.thumbnailTouch.rawValue)
 
 extension ViewController {
     
-    func thumbnailTouch(data:Any?, extra:Any?) {
+    func thumbnailTouch(indexPath:IndexPath?, data:Any?, extra:Any?) {
         
         print("thumbnailTouch")
     }
 }
+```
+
+You can also use callback function(or block) for selecting cell event by not passing event identifier.
+
+```swift
+handler.registerCallback(callback: tableViewCellSelectHandler(indexPath:data:extra:), forCellIdentifier: TableViewCell.identifier())
 ```
 
 # License

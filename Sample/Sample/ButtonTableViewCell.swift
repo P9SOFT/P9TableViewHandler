@@ -13,6 +13,7 @@ class ButtonTableViewCell: UITableViewCell {
     
     fileprivate var data:[String:Any]?
     fileprivate weak var delegate:P9TableViewCellDelegate?
+    fileprivate var indexPath:IndexPath?
     
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var switchButton: UISwitch!
@@ -33,7 +34,7 @@ class ButtonTableViewCell: UITableViewCell {
         if data != nil, let touch = touches.first {
             let touchedPosition = touch.location(in: self)
             if thumbnailImageView.frame.contains(touchedPosition) == true {
-                delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.thumbnailTouch.rawValue, data: data, extra: nil)
+                delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.thumbnailTouch.rawValue, indexPath: indexPath, data: data, extra: nil)
                 return
             }
         }
@@ -43,7 +44,7 @@ class ButtonTableViewCell: UITableViewCell {
     
     @IBAction func switchButtonToggled(_ sender: Any) {
         
-        delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.switchButtonChanged.rawValue, data: data, extra: switchButton.isOn)
+        delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.switchButtonChanged.rawValue, indexPath: nil, data: data, extra: switchButton.isOn)
     }
 }
 
@@ -71,5 +72,10 @@ extension ButtonTableViewCell: P9TableViewCellProtocol {
     func setDelegate(_ delegate: P9TableViewCellDelegate) {
         
         self.delegate = delegate
+    }
+    
+    func setIndexPath(_ indexPath: IndexPath) {
+        
+        self.indexPath = indexPath
     }
 }

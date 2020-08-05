@@ -22,7 +22,7 @@ class TextTableSectionFooterView: UIView {
         if data != nil, let touch = touches.first {
             let touchedPosition = touch.location(in: self)
             if iconLabel.frame.contains(touchedPosition) == true {
-                delegate?.tableViewCellEvent(cellIdentifier: TextTableSectionFooterView.identifier(), eventIdentifier: "iconTouch", data: data, extra: nil)
+                delegate?.tableViewCellEvent(cellIdentifier: Self.identifier(), eventIdentifier: EventId.iconTouch.rawValue, indexPath: nil, data: data, extra: nil)
                 return
             }
         }

@@ -9,6 +9,7 @@
 import Foundation
 
 enum EventId: String {
+    case iconTouch
     case thumbnailTouch
     case switchButtonChanged
 }
