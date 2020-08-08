@@ -11,7 +11,7 @@ import UIKit
 
 @objc public protocol P9TableViewCellDelegate: class {
     
-    func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    func tableViewCellEvent(cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
 
 public protocol P9TableViewCellProtocol: class {
@@ -21,6 +21,7 @@ public protocol P9TableViewCellProtocol: class {
     static func cellHeightForData(_ data: Any?, extra: Any?) -> CGFloat
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9TableViewCellDelegate)
+    func setIndexPath(_ indexPath: IndexPath)
 }
 
 public extension P9TableViewCellProtocol {
@@ -36,6 +37,8 @@ public extension P9TableViewCellProtocol {
     }
     
     func setDelegate(_ delegate:P9TableViewCellDelegate) {}
+    
+    func setIndexPath(_ indexPath: IndexPath) {}
 }
 
 @objc public protocol P9TableViewCellObjcProtocol: class {
@@ -45,6 +48,7 @@ public extension P9TableViewCellProtocol {
     static func cellHeightForData(_ data: Any?, extra: Any?) -> CGFloat
     func setData(_ data: Any?, extra: Any?)
     func setDelegate(_ delegate: P9TableViewCellDelegate)
+    func setIndexPath(_ indexPath: IndexPath)
 }
 
 @objc public protocol P9TableViewHandlerDelegate: class {
@@ -59,7 +63,7 @@ public extension P9TableViewCellProtocol {
     @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplayingHeaderView view: UIView, forSection section: Int)
     @objc optional func tableViewHandler(handlerIdentifier:String, didEndDisplayingFooterView view: UIView, forSection section: Int)
     @objc optional func tableViewHandlerCellDidSelect(handlerIdentifier:String, cellIdentifier:String, indexPath:IndexPath, data:Any?, extra:Any?)
-    @objc optional func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, data:Any?, extra:Any?)
+    @objc optional func tableViewHandlerCellEvent(handlerIdentifier:String, cellIdentifier:String, eventIdentifier:String?, indexPath:IndexPath?, data:Any?, extra:Any?)
 }
 
 @objc open class P9TableViewHandler: NSObject {
@@ -92,9 +96,12 @@ public extension P9TableViewCellProtocol {
         }
     }
     
+    public typealias CallbackBlock = (_ indexPath:IndexPath?, _ data:Any?, _ extra:Any?) -> Void
+    
     fileprivate let moduleName = Bundle.main.infoDictionary?["CFBundleName"] as? String ?? ""
     fileprivate var handlerIdentifier:String = ""
     fileprivate var cellIdentifierForType:[String:String] = [:]
+    fileprivate var callbackBlocks:[String:CallbackBlock] = [:]
     
     @objc public var sections:[Section] = []
     @objc public weak var delegate:P9TableViewHandlerDelegate?
@@ -108,6 +115,32 @@ public extension P9TableViewCellProtocol {
         }
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    @objc public func registCallback(callback: @escaping CallbackBlock, forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String?=nil) {
+        
+        callbackBlocks[key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier)] = callback
+    }
+    
+    @objc public func unregistCallback(forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String?=nil) {
+        
+        callbackBlocks.removeValue(forKey: key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier))
+    }
+    
+    @objc public func unregistAllCallbacks() {
+        
+        callbackBlocks.removeAll()
+    }
+}
+
+extension P9TableViewHandler {
+    
+    fileprivate func key(forCellIdentifier cellIdentifier:String, withEventIdentifier eventIdentifier:String?=nil) -> String {
+        
+        if let eventIdentifier = eventIdentifier {
+            return "\(cellIdentifier):\(eventIdentifier)"
+        }
+        return "\(cellIdentifier):"
     }
 }
 
@@ -127,11 +160,11 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
                 return CGFloat.leastNormalMagnitude
         }
         
-        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
-            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
+        if let cellType = cls as? P9TableViewCellProtocol.Type {
+            return cellType.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
         }
-        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
-            return tableViewCellContentsCell.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
+        if let cellType = cls as? P9TableViewCellObjcProtocol.Type {
+            return cellType.cellHeightForData(sections[section].headerData, extra: sections[section].extra)
         }
         return CGFloat.leastNormalMagnitude
     }
@@ -145,14 +178,20 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
                 return nil
         }
         
-        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
-            (view as? P9TableViewCellProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
-            (view as? P9TableViewCellProtocol)?.setDelegate(self)
+        if let cellType = cls as? P9TableViewCellProtocol.Type, let view = cellType.instanceFromNib() {
+            if let cell = view as? P9TableViewCellProtocol {
+                cell.setData(sections[section].headerData, extra: sections[section].extra)
+                cell.setDelegate(self)
+                cell.setIndexPath(IndexPath(row: 0, section: section))
+            }
             return view
         }
-        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
-            (view as? P9TableViewCellObjcProtocol)?.setData(sections[section].headerData, extra: sections[section].extra)
-            (view as? P9TableViewCellObjcProtocol)?.setDelegate(self)
+        if let cellType = cls as? P9TableViewCellObjcProtocol.Type, let view = cellType.instanceFromNib() {
+            if let cell = view as? P9TableViewCellObjcProtocol {
+                cell.setData(sections[section].headerData, extra: sections[section].extra)
+                cell.setDelegate(self)
+                cell.setIndexPath(IndexPath(row: 0, section: section))
+            }
             return view
         }
         return nil
@@ -167,11 +206,11 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
                 return CGFloat.leastNormalMagnitude
         }
         
-        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type {
-            return tableViewCellContentsCell.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
+        if let cellType = cls as? P9TableViewCellProtocol.Type {
+            return cellType.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
         }
-        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type {
-            return tableViewCellContentsCell.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
+        if let cellType = cls as? P9TableViewCellObjcProtocol.Type {
+            return cellType.cellHeightForData(sections[section].footerData, extra: sections[section].extra)
         }
         return CGFloat.leastNormalMagnitude
     }
@@ -185,14 +224,20 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
                 return nil
         }
         
-        if let tableViewCellContentsCell = cls as? P9TableViewCellProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
-            (view as? P9TableViewCellProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
-            (view as? P9TableViewCellProtocol)?.setDelegate(self)
+        if let cellType = cls as? P9TableViewCellProtocol.Type, let view = cellType.instanceFromNib() {
+            if let cell = view as? P9TableViewCellProtocol {
+                cell.setData(sections[section].footerData, extra: sections[section].extra)
+                cell.setDelegate(self)
+                cell.setIndexPath(IndexPath(row: 0, section: section))
+            }
             return view
         }
-        if let tableViewCellContentsCell = cls as? P9TableViewCellObjcProtocol.Type, let view = tableViewCellContentsCell.instanceFromNib() {
-            (view as? P9TableViewCellObjcProtocol)?.setData(sections[section].footerData, extra: sections[section].extra)
-            (view as? P9TableViewCellObjcProtocol)?.setDelegate(self)
+        if let cellType = cls as? P9TableViewCellObjcProtocol.Type, let view = cellType.instanceFromNib() {
+            if let cell = view as? P9TableViewCellObjcProtocol {
+                cell.setData(sections[section].footerData, extra: sections[section].extra)
+                cell.setDelegate(self)
+                cell.setIndexPath(IndexPath(row: 0, section: section))
+            }
             return view
         }
         return nil
@@ -233,13 +278,15 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: clsName, for: indexPath)
-        if let tableViewCellContentsCell = cell as? P9TableViewCellProtocol {
-            tableViewCellContentsCell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
-            tableViewCellContentsCell.setDelegate(self)
+        if let cell = cell as? P9TableViewCellProtocol {
+            cell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+            cell.setDelegate(self)
+            cell.setIndexPath(indexPath)
         }
-        if let tableViewCellContentsCell = cell as? P9TableViewCellObjcProtocol {
-            tableViewCellContentsCell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
-            tableViewCellContentsCell.setDelegate(self)
+        if let cell = cell as? P9TableViewCellObjcProtocol {
+            cell.setData(records[indexPath.row].data, extra: records[indexPath.row].extra)
+            cell.setDelegate(self)
+            cell.setIndexPath(indexPath)
         }
         return cell
     }
@@ -252,7 +299,12 @@ extension P9TableViewHandler: UITableViewDataSource, UITableViewDelegate {
         }
         
         let cellIdentifier = cellIdentifierForType[records[indexPath.row].type] ?? records[indexPath.row].type
-        delegate?.tableViewHandlerCellDidSelect?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, indexPath: indexPath, data: records[indexPath.row].data, extra: records[indexPath.row].extra)
+        
+        if let callback = callbackBlocks[key(forCellIdentifier: cellIdentifier)] {
+            callback(indexPath, records[indexPath.row].data, records[indexPath.row].extra)
+        } else {
+            delegate?.tableViewHandlerCellDidSelect?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, indexPath: indexPath, data: records[indexPath.row].data, extra: records[indexPath.row].extra)
+        }
     }
 }
 
@@ -313,8 +365,12 @@ extension P9TableViewHandler: UIScrollViewDelegate {
 
 extension P9TableViewHandler: P9TableViewCellDelegate {
     
-    public func tableViewCellEvent(cellIdentifier: String, eventIdentifier: String?, data: Any?, extra: Any?) {
+    public func tableViewCellEvent(cellIdentifier: String, eventIdentifier: String?, indexPath: IndexPath?, data: Any?, extra: Any?) {
         
-        delegate?.tableViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, data: data, extra: extra)
+        if let eventIdentifier = eventIdentifier, let callback = callbackBlocks[key(forCellIdentifier: cellIdentifier, withEventIdentifier: eventIdentifier)] {
+            callback(indexPath, data, extra)
+        } else {
+            delegate?.tableViewHandlerCellEvent?(handlerIdentifier: handlerIdentifier, cellIdentifier: cellIdentifier, eventIdentifier: eventIdentifier, indexPath: indexPath, data: data, extra: extra)
+        }
     }
 }
